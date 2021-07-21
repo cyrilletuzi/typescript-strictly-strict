@@ -6,16 +6,18 @@ interface TSConfig {
     noImplicitAny?: boolean;
     strictNullChecks?: boolean;
     noImplicitThis?: boolean;
-    alwaysStrict?: boolean;
+    alwaysStrict?: boolean | undefined;
     strictBindCallApply?: boolean;
     strictFunctionTypes?: boolean;
     strictPropertyInitialization?: boolean;
+    useUnknownInCatchVariables?: boolean;
     noFallthroughCasesInSwitch?: boolean;
     noImplicitReturns?: boolean;
     /* noUncheckedIndexedAccess?: boolean; */
     noPropertyAccessFromIndexSignature?: boolean;
     forceConsistentCasingInFileNames?: boolean;
     noImplicitOverride?: boolean;
+    exactOptionalPropertyTypes?: boolean;
   };
 }
 
@@ -26,6 +28,7 @@ interface TSConfig {
  * - `noImplicitReturns`
  * - `forceConsistentCasingInFileNames`
  * - `noImplicitOverride`
+ * - `exactOptionalPropertyTypes`
  * {@link https://www.typescriptlang.org/docs/handbook/compiler-options.html}
  *
  * @param cwd Working directory path
@@ -68,6 +71,10 @@ export default function enableTypescriptStrict(cwd: string): boolean {
     config.compilerOptions.noImplicitOverride = true;
   }
 
+  if (checkDependencyVersion(cwd, 'typescript', '>=4.4.0')) {
+    config.compilerOptions.exactOptionalPropertyTypes = true;
+  }
+
   /* Clean up options included in strict mode */
   if (config.compilerOptions.alwaysStrict) {
     delete config.compilerOptions.alwaysStrict;
@@ -89,6 +96,9 @@ export default function enableTypescriptStrict(cwd: string): boolean {
   }
   if (config.compilerOptions.strictPropertyInitialization) {
     delete config.compilerOptions.strictPropertyInitialization;
+  }
+  if (config.compilerOptions.useUnknownInCatchVariables) {
+    delete config.compilerOptions.useUnknownInCatchVariables;
   }
 
   return saveConfig(cwd, file, config);
